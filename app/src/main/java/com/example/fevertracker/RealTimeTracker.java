@@ -226,6 +226,7 @@ public class RealTimeTracker extends AppCompatActivity implements OnMapReadyCall
     }
 
     public void addMarker(int i, int id, LatLng loc, int time) {
+        long currTime = System.currentTimeMillis() / 1000L;
         boolean putMarker = false;
         if (Loc[id] != null) {
             if (time > Time[id]) {
@@ -247,10 +248,10 @@ public class RealTimeTracker extends AppCompatActivity implements OnMapReadyCall
             counter[id] = 241;
         }
 
-        if (counter[id] >= 240) {
-            isOnline[id] = false;
-        } else {
+        if (counter[id] < 240 || (currTime - time) < 240) {
             isOnline[id] = true;
+        } else {
+            isOnline[id] = false;
         }
         if (!cameraMoved) {
             builder.include(loc);
