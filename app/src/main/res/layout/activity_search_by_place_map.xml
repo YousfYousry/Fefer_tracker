@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".searchByPlaceMap">
+
+    <FrameLayout
+        android:id="@+id/dummy"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <LinearLayout
+        android:id="@+id/select"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:elevation="20dp"
+        android:background="@drawable/tool_bar_shadow"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/abc_vector_test"
+            android:onClick="back"
+            android:background="@drawable/ripple_effect_oval" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/PlaceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:onClick="searchPlaceClicked"
+                android:background="@drawable/ripple_effect_rec"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:text="1- Search for a place." />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+            <TextView
+                android:id="@+id/DateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:onClick="datePickerClicked"
+                android:background="@drawable/ripple_effect_rec"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp"
+                android:text="2- Choose a date." />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:onClick="show"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_more_vert_black_24dp"
+            android:background="@drawable/ripple_effect_oval" />
+
+    </LinearLayout>
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/slidingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:umanoPanelHeight="30dp"
+        app:umanoShadowHeight="0dp"
+        app:umanoFadeColor="#00FFFFFF"
+        android:gravity="bottom"
+        android:layout_below="@+id/dummy"
+        android:layout_alignParentBottom="true"
+        app:umanoOverlay="true"
+        android:layout_marginBottom="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/dummy">
+
+            <fragment
+                android:id="@+id/mapSearch"
+                class="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".searchByPlaceMap" />
+
+            <FrameLayout
+                android:id="@+id/exit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:onClick="exit"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/SearchFrame2"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true">
+
+                <FrameLayout
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="bottom">
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside"
+                        android:background="@drawable/shadow" />
+
+                    <ImageButton
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:onClick="RadiusChanger"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/radius"
+                        android:background="@drawable/ripple_effect_oval_no_background" />
+                </FrameLayout>
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerInside"
+                    android:background="@drawable/shadow" />
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:onClick="datePickerClicked"
+                    android:src="@drawable/ic_date_range_black_24dp"
+                    android:background="@drawable/ripple_effect_oval_no_background" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/SearchFrame"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true">
+
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/input_search"
+                    android:layout_height="45dp"
+                    android:layout_width="match_parent"
+                    android:textSize="15sp"
+                    android:layout_gravity="left"
+                    android:paddingLeft="15dp"
+                    android:paddingStart="15dp"
+                    android:paddingRight="40dp"
+                    android:paddingEnd="40dp"
+                    android:textColorHint="@color/grey"
+                    android:background="@drawable/edit_text_with_shadow"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/colorPrimaryDark"/>
+
+                <FrameLayout
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:onClick="searchClicked"
+                    android:layout_gravity="right">
+
+                    <ImageButton
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:onClick="searchClicked"
+                        android:src="@drawable/ic_search_blue_24dp"
+                        android:background="@drawable/ripple_effect_search_places" />
+                </FrameLayout>
+
+            </FrameLayout>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout2"
+            android:layout_marginTop="100dp"
+            android:elevation="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/dragger"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/new_shadow">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_gravity="bottom">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitXY"
+                        android:background="@drawable/sliding_up_panel_back" />
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="5dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/minus" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/dragger">
+
+                <RelativeLayout
+                    android:id="@+id/usersContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ListView
+                        android:id="@+id/UsersList"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorAccent"
+                        android:divider="@color/grey"
+                        android:dividerHeight="0dp"
+                        android:layout_gravity="center"
+                        android:textAlignment="center" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/chooseRadius"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:onClick="empty"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/shadow_rec">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose the radius"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="( in meters )"
+                android:textColor="#A4000000"
+                android:textSize="18sp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controls"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:onClick="bigger"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_add_black_24dp"
+                android:background="@drawable/ripple_effect_rec" />
+
+            <EditText
+                android:id="@+id/radius"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:hint="Circle radius"
+                android:text="100"
+                android:inputType="numberDecimal"
+                android:background="@android:color/transparent"
+                android:textColorHint="#6C000000"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center"
+                android:onClick="smaller"
+                android:scaleType="center"
+                android:src="@drawable/ic_remove_black_24dp"
+                android:background="@drawable/ripple_effect_rec" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/enter"
+            android:onClick="Enter"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0dp">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:onClick="Enter"
+                android:background="@drawable/ripple_effect_rec" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:paddingRight="5dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:text="Search for users" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:layout_gravity="center"
+                    android:src="@drawable/login" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </FrameLayout>
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:visibility="gone"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

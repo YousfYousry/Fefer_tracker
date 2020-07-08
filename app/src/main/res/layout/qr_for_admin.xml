@@ -6,47 +6,14 @@
     android:background="@color/colorAccent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/item1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_margin="17dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="Enter Id number: "
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/ID"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:inputType="number"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/Enter"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:textColor="@color/colorAccent"
-            android:background="@color/colorPrimaryDark"
-            android:text="Enter" />
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bot"
-        android:layout_below="@+id/item1"
-        >
+        android:layout_marginTop="0dp"
+        android:layout_alignParentTop="true">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +22,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
             android:textSize="24dp"
-            android:text="Click here to start QR scanner"/>
+            android:text="Click here to start QR scanner" />
 
 
     </FrameLayout>

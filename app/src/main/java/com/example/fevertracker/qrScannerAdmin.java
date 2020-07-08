@@ -9,10 +9,10 @@ import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 
 public class qrScannerAdmin extends Fragment {
-    admin admin;
+    findUserAdmin admin;
     ZBarScannerView mScannerView;
 
-    public void setAdmin(com.example.fevertracker.admin admin) {
+    public void setAdmin(findUserAdmin admin) {
         this.admin = admin;
     }
 

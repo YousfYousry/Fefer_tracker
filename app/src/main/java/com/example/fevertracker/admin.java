@@ -19,8 +19,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -58,8 +56,6 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
     private DrawerLayout drawer;
     Context context = this;
     admin admin = this;
-    Button Enter;
-    EditText ID;
     admin adminClass = this;
     final int RequestCameraPermissionID = 1001;
     boolean dataUpdated = false;
@@ -84,6 +80,11 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
         }
     }
 
+    public void searchByPlace(View view){
+        startActivity(new Intent(getApplicationContext(), searchByPlaceMap.class));
+    }
+
+
     public void edit(View view) {
         if (loadData("Id").isEmpty()){
             Toast.makeText(this, "Please get Id first", Toast.LENGTH_LONG).show();
@@ -91,7 +92,43 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
     public void update(View view) {
-        updateMarkers();
+//        updateMarkers();
+        System.out.println("started");
+        for(int i=0;i<49995000;i++){
+            distance(new LatLng(0,0),new LatLng(3,100));
+        }
+        System.out.println("done");
+
+    }
+    public double distance(LatLng latLng1, LatLng latLng2) {
+
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+
+        double lat1 = latLng1.latitude, lat2 = latLng2.latitude, lon1 = latLng1.longitude, lon2 = latLng2.longitude;
+
+
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dlon / 2), 2);
+
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+
+        // calculate the result
+        return (c * r * 1000);
     }
 
     public void addPic(View view) {
@@ -119,7 +156,8 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-
+        CharSequence text = getIntent()
+                .getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
         saveData("in", "log");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -151,11 +189,25 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
 
     public void setHeaderViewInfo() {
         if (!loadData("Id").isEmpty()) {
-            Toast.makeText(this, "Data is downloaded.", Toast.LENGTH_SHORT).show();//User was found and his
             setProfilePicture();
             name.setText("Current user Id: " + loadData("Id"));
         } else {
             name.setText("Current user Id: ");
+        }
+    }
+
+    public File getLocalFile(){
+        return localFile;
+    }
+
+    ImageView selectedImageP;
+
+    public void setProfilePictureP(ImageView profilePicture){
+        selectedImageP = profilePicture;
+        if(localFile!=null){
+            selectedImageP.setImageURI(Uri.fromFile(localFile));
+        }else{
+            selectedImageP.setImageResource(R.drawable.avatar);
         }
     }
 
@@ -166,12 +218,18 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
             storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    if(selectedImageP!=null){
+                        selectedImageP.setImageURI(Uri.fromFile(localFile));
+                    }
                     selectedImage.setImageURI(Uri.fromFile(localFile));
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
 //                    Toast.makeText(context, "Error while downloading profile picture", Toast.LENGTH_SHORT).show();
+                    if(selectedImageP!=null){
+                        selectedImageP.setImageResource(R.drawable.avatar);
+                    }
                     selectedImage.setImageResource(R.drawable.avatar);
                 }
             });
@@ -181,7 +239,6 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
     public void setView(View v) {
-
         progressBar = v.findViewById(R.id.progressBar);
     }
 
@@ -203,6 +260,7 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
         progressBar.setVisibility(View.GONE);
     }
 
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -222,12 +280,13 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
             case R.id.nav_profile:
                 profileForAdminFragment profileForAdminFragment = new profileForAdminFragment();
                 profileForAdminFragment.setContext(context);
+//                profileForAdminFragment.setAdmin(admin);
                 profileForAdminFragment.setId(loadData("Id"));
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         profileForAdminFragment).commit();
                 break;
             case R.id.nav_qrcode:
-//                mCodeScanner = null;
+//              mCodeScanner = null;
                 QrData();
                 QrForAdmin qrForAdmin = new QrForAdmin();
                 qrForAdmin.setAdmin(admin);
@@ -249,33 +308,12 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
         return true;
     }
 
-    public void EnterPressed() {
-        String IDstring = ID.getText().toString().trim();
-        if (IDstring.isEmpty()) {
-            Toast.makeText(context, "Write Id first", Toast.LENGTH_LONG).show();
-        } else {
-            saveData(IDstring, "Id");
-            setHeaderViewInfo();
-        }
-    }
-
-    //    CodeScanner mCodeScanner;
-//    CodeScannerView scannerView;
     FrameLayout frameLayout;
     Activity activity;
 
     public void QRonCreate(View view) {
         activity = this;
-        ID = view.findViewById(R.id.ID);
-        Enter = view.findViewById(R.id.Enter);
         frameLayout = view.findViewById(R.id.frame_container);
-//        scannerView = view.findViewById(R.id.scanner_view);
-        Enter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EnterPressed();
-            }
-        });
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,25 +331,8 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
     public void startCam() {
-//        final Activity activity = this;
-//        if (mCodeScanner == null) {
-//            mCodeScanner = new CodeScanner(context, scannerView);
-//            mCodeScanner.setDecodeCallback(new DecodeCallback() {
-//                @Override
-//                public void onDecoded(@NonNull final Result result) {
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            saveData(result.getText(), "Id");
-//                            setHeaderViewInfo();
-//                        }
-//                    });
-//                }
-//            });
-//        }
-//        mCodeScanner.startPreview();
         qrScannerAdmin qrScanner = new qrScannerAdmin();
-        qrScanner.setAdmin(admin);
+//        qrScanner.setAdmin(admin);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_container,
                 qrScanner).commit();
     }
@@ -326,7 +347,6 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
 
     @Override
     public void handleResult(me.dm7.barcodescanner.zbar.Result result) {
-//        result.getContents()
         saveData(result.getContents().trim(), "Id");
         setHeaderViewInfo();
     }
@@ -465,13 +485,13 @@ public class admin extends AppCompatActivity implements NavigationView.OnNavigat
                 }
             }
         }
-        for (int i = 0; i < lat.size(); i += 3) {
-            if (lat.get(i) != null && lat.get(i + 1) != null && lat.get(i + 2) != null && isNumric(lat.get(i)) && isNumric(lat.get(i + 1)) && isNumric(lat.get(i + 2))) {
-                LatLng TempLatLng = new LatLng(Double.parseDouble(lat.get(i + 1)), Double.parseDouble(lat.get(i + 2)));
-                showMarker(TempLatLng, color, Integer.parseInt(lat.get(i)));
-                System.out.println(i);
-            }
-        }
+//        for (int i = 0; i < lat.size(); i += 3) {
+//            if (lat.get(i) != null && lat.get(i + 1) != null && lat.get(i + 2) != null && isNumric(lat.get(i)) && isNumric(lat.get(i + 1)) && isNumric(lat.get(i + 2))) {
+//                LatLng TempLatLng = new LatLng(Double.parseDouble(lat.get(i + 1)), Double.parseDouble(lat.get(i + 2)));
+////                showMarker(TempLatLng, color, Integer.parseInt(lat.get(i)));
+//                System.out.println(i);
+//            }
+//        }
     }
 
     public boolean isNumric(String string) {

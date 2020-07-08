@@ -15,25 +15,8 @@ import java.util.Map;
 public class Member {
     private String name, email, phone, passport, address,state;
     List<String> tracker = new ArrayList<>();
-    public static final String SHARED_PREFS = "sharedPrefs";
-
-    FirebaseFirestore fStore;
-    String userID;
-    DocumentReference noteRef;
-    FirebaseAuth fAuth;
-    DatabaseReference reff;
-
-    public List<String> getTracker() {
-        return tracker;
-    }
-
-
     public void setTracker(ArrayList<String> tracker) {
         this.tracker = tracker;
-    }
-
-    public String getState() {
-        return state;
     }
 
     public void setState(String state) {
@@ -48,32 +31,16 @@ public class Member {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public String getPassport() {
-        return passport;
-    }
-
     public void setPassport(String passport) {
         this.passport = passport;
-    }
-
-    public String getAddress() {
-        return address;
     }
 
     public void setAddress(String address) {

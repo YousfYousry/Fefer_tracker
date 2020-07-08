@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment{
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("name").getValue() != null) {
+                if (dataSnapshot.child("name").getValue() != null&&dataSnapshot.child("email").getValue() != null&&dataSnapshot.child("phone").getValue() != null&&dataSnapshot.child("address").getValue() != null&&dataSnapshot.child("passport").getValue() != null&&dataSnapshot.child("state").getValue() != null) {
                     name.setText(dataSnapshot.child("name").getValue().toString());
                     email.setText(dataSnapshot.child("email").getValue().toString());
                     phone.setText(dataSnapshot.child("phone").getValue().toString());

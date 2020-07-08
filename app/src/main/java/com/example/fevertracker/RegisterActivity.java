@@ -3,18 +3,41 @@ package com.example.fevertracker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,34 +56,47 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.auth.User;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import maes.tech.intentanim.CustomIntent;
+
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    long maxid=1;
-    TextView Title;
-    TextInputLayout name, phone, address, passport, pass, confirmpass, email;
-    TextInputEditText nameE, phoneE, addressE, passportE, passE, confirmpassE, emailE;
+    long maxid = 1;
+    Space marginSpace;
+    LinearLayout linearLayout, forLogin;
+    TextView Title, enterTitle;
+    EditText nameE, emailE, phoneE, passportE, addressE, passE, confirmpassE, focused;
+    FrameLayout name, email, phone, passport, address, pass, confirmpass, forReg;
+    ScrollView scrollView;
+    ImageView back;
+    //    ImageView background;
     DatabaseReference reff;
     Member member;
     Button reglog;
-    Boolean register = true;
+    Boolean register = false;
     FirebaseAuth fAuth;
     ProgressBar progressBar;
     FirebaseFirestore fStore;
     String userID;
     boolean fail = false;
-    String AdminName = "",AdminPassword = "";
+    String AdminName = "", AdminPassword = "";
     int PERMISSION_ID = 44;
     public static final String SHARED_PREFS = "sharedPrefs";
     DocumentReference noteRef;
+    Activity activity = this;
 
+    public void onback(View view) {
+        onBackPressed();
+    }
 
-    public void Register(View view){
-        if(checkPermissions()) {
+    public void Register(View view) {
+        if (checkPermissions()) {
             if (register) {
                 final String name = nameE.getText().toString().trim();
                 final String email = emailE.getText().toString().trim();
@@ -122,20 +158,16 @@ public class RegisterActivity extends AppCompatActivity {
                             userID = fAuth.getCurrentUser().getUid();
                             DocumentReference documentReference = fStore.collection("users").document(userID);
                             Map<String, Object> user = new HashMap<>();
+                            reff.child(String.valueOf(maxid + 1)).child("name").setValue(name);
+                            reff.child(String.valueOf(maxid + 1)).child("email").setValue(email);
+                            reff.child(String.valueOf(maxid + 1)).child("phone").setValue(phone);
+                            reff.child(String.valueOf(maxid + 1)).child("address").setValue(address);
+                            reff.child(String.valueOf(maxid + 1)).child("passport").setValue(passport);
+                            reff.child(String.valueOf(maxid + 1)).child("state").setValue("1");
 
-                            ArrayList<String> tracker = new ArrayList<>();
 
-                            member = new Member();
-                            member.setName(name);
-                            member.setEmail(email);
-                            member.setPhone(phone);
-                            member.setAddress(address);
-                            member.setPassport(passport);
-                            member.setState("1");
-                            member.setTracker(tracker);
-                            reff.child(String.valueOf(maxid + 1)).setValue(member);
                             user.put("Id", Long.toString(maxid + 1));
-                            saveData(Long.toString(maxid+1),"Id");
+                            saveData(Long.toString(maxid + 1), "Id");
 
                             documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -152,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 }
                             });
                             if (!fail) {
-                                startActivity(new Intent(getApplicationContext(), LocationActivity.class));
+                                startActivity(new Intent(getApplicationContext(), UserDashboard.class));
                                 finish();
                             }
                         } else {
@@ -180,7 +212,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if (password.compareTo(AdminPassword) == 0 && email.compareTo(AdminName) == 0) {
-                    startActivity(new Intent(getApplicationContext(), admin.class));
+                    startActivity(new Intent(getApplicationContext(), AdminDashboard.class));
                     finish();
                     return;
                 }
@@ -207,33 +239,40 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
             }
-        }else{
-            Toast.makeText(this,"Please accept permission first.",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Please accept permission first.", Toast.LENGTH_LONG).show();
         }
     }
-    public void Login(View view){
-        if(register) {
-            Title.setText("Login");
+
+    public void Login(View view) {
+        clearFocus();
+        if (register) {
             name.setVisibility(View.GONE);
             phone.setVisibility(View.GONE);
             address.setVisibility(View.GONE);
             passport.setVisibility(View.GONE);
             confirmpass.setVisibility(View.GONE);
-            email.setHint("Email address");
-            pass.setHint("Password");
-            reglog.setText("Register");
+            emailE.setHint("Email address");
+            passE.setHint("Password");
+            enterTitle.setText("Sign in");
+            linearLayout.setVisibility(View.VISIBLE);
+            Title.setVisibility(View.VISIBLE);
+            forReg.setVisibility(View.GONE);
+            forLogin.setVisibility(View.VISIBLE);
             register = false;
 
-}else{
-            Title.setText("Registration");
+        } else {
             name.setVisibility(View.VISIBLE);
             phone.setVisibility(View.VISIBLE);
             address.setVisibility(View.VISIBLE);
             passport.setVisibility(View.VISIBLE);
             confirmpass.setVisibility(View.VISIBLE);
-            email.setHint("Email address (Must remember)");
-            pass.setHint("Password (Must remember)");
-            reglog.setText("Login");
+            linearLayout.setVisibility(View.GONE);
+            emailE.setHint("Email address (Must remember)");
+            passE.setHint("Password (Must remember)");
+            forReg.setVisibility(View.VISIBLE);
+            forLogin.setVisibility(View.GONE);
+            enterTitle.setText("Create");
             register = true;
         }
     }
@@ -243,22 +282,26 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!checkPermissions()){
+        boolean permissions = checkPermissions();
+
+        if (!permissions) {
             requestPermissions();
         }
-
         iniFunc();
-        if(checkPermissions()) {
-            if(!loadData("log").isEmpty()){
-                startActivity(new Intent(getApplicationContext(), admin.class));
+        initBackground();
+
+        if (permissions) {
+            if (!loadData("log").isEmpty()) {
+                startActivity(new Intent(getApplicationContext(), AdminDashboard.class));
                 finish();
             }
             if (fAuth.getCurrentUser() != null) {
-                startActivity(new Intent(getApplicationContext(), LocationActivity.class));
+                startActivity(new Intent(getApplicationContext(), UserDashboard.class));
                 finish();
             }
         }
     }
+
     public String loadData(String name) {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         if (sharedPreferences == null) {
@@ -266,31 +309,134 @@ public class RegisterActivity extends AppCompatActivity {
         }
         return sharedPreferences.getString(name, "");
     }
-    public void iniFunc(){
-        Title = findViewById(R.id.RegistrationTitle);
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void initBackground() {
+        marginSpace = findViewById(R.id.marginSpace);
+        back = findViewById(R.id.scrollView2);
+        scrollView = findViewById(R.id.scrole);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) marginSpace.getLayoutParams();
+        params2.height = height - dpToPx(150);
+        marginSpace.setLayoutParams(params2);
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                clearFocus();
+                return false;
+            }
+        });
+        back.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                clearFocus();
+                return false;
+            }
+        });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (view != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    public void clearFocus() {
+        if (focused != null) {
+            focused.clearFocus();
+            hideKeyboard(focused);
+        }
+    }
+
+    public void iniFunc() {
+        forLogin = findViewById(R.id.forLoginTitle);
+        forReg = findViewById(R.id.forRegisTiltle);
+        enterTitle = findViewById(R.id.enterTitle);
+        linearLayout = findViewById(R.id.forLogin);
         name = findViewById(R.id.name);
+        Title = findViewById(R.id.RegistrationTitle);
         email = findViewById(R.id.email);
         phone = findViewById(R.id.phone);
         address = findViewById(R.id.address);
         passport = findViewById(R.id.passport);
         pass = findViewById(R.id.pass);
         confirmpass = findViewById(R.id.conPass);
-        reglog = findViewById(R.id.button2);
+//        reglog = findViewById(R.id.button2);
         nameE = findViewById(R.id.username);
+        nameE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = nameE;
+                }
+            }
+        });
         emailE = findViewById(R.id.emailadress);
+        emailE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = emailE;
+                }
+            }
+        });
         phoneE = findViewById(R.id.phoneNum);
+        phoneE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = phoneE;
+                }
+            }
+        });
         addressE = findViewById(R.id.HomeAddress);
+        addressE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = addressE;
+                }
+            }
+        });
         passportE = findViewById(R.id.passport_number);
+        passportE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = passportE;
+                }
+            }
+        });
         passE = findViewById(R.id.password);
+        passE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = passE;
+                }
+            }
+        });
         confirmpassE = findViewById(R.id.confirmpassword);
+        confirmpassE.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    focused = confirmpassE;
+                }
+            }
+        });
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progressBar);
-        reff= FirebaseDatabase.getInstance().getReference().child("Member");
+        reff = FirebaseDatabase.getInstance().getReference().child("Member");
+
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                maxid=dataSnapshot.getChildrenCount();
+                maxid = dataSnapshot.getChildrenCount();
             }
 
             @Override
@@ -298,8 +444,8 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
-        DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("adminInfo");
-        reff.addValueEventListener(new ValueEventListener() {
+        DatabaseReference reff2 = FirebaseDatabase.getInstance().getReference().child("adminInfo");
+        reff2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 AdminName = dataSnapshot.child("adminName").getValue().toString();
@@ -319,6 +465,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
         return false;
     }
+
     private void requestPermissions() {
         ActivityCompat.requestPermissions(
                 this,
@@ -326,6 +473,7 @@ public class RegisterActivity extends AppCompatActivity {
                 PERMISSION_ID
         );
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -333,23 +481,25 @@ public class RegisterActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission accepted", Toast.LENGTH_SHORT).show();
                 if (fAuth.getCurrentUser() != null) {
-                    startActivity(new Intent(getApplicationContext(), LocationActivity.class));
+                    startActivity(new Intent(getApplicationContext(), UserDashboard.class));
                     finish();
                 }
-            }else{
+            } else {
                 finish();
             }
         } else {
             finish();
         }
     }
+
     public void saveData(String data, String name) {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(name, data);
         editor.apply();
     }
-    public void saveId(){
+
+    public void saveId() {
         String userID = fAuth.getCurrentUser().getUid();
         noteRef = fStore.collection("users").document(userID);
         noteRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
@@ -367,16 +517,39 @@ public class RegisterActivity extends AppCompatActivity {
                     String Id = documentSnapshot.getString("Id");
                     saveData(Id, "Id");
                     Toast.makeText(RegisterActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), LocationActivity.class));
+                    startActivity(new Intent(getApplicationContext(), UserDashboard.class));
                     finish();
                 }
             }
         });
     }
 
+    public int dpToPx(int dip) {
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dip,
+                r.getDisplayMetrics()
+        );
+        return (int) px;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        CustomIntent.customType(this, "left-to-right");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (register) {
+            Login(null);
+        }
     }
 }
 

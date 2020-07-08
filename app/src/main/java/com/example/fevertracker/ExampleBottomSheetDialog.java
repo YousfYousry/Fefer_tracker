@@ -56,4 +56,5 @@ public class ExampleBottomSheetDialog extends BottomSheetDialogFragment {
     public void Gal(View view) {
 //        locationActivity.gallery();
     }
+
 }

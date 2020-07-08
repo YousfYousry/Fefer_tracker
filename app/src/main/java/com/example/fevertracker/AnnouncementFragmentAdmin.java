@@ -1,6 +1,8 @@
 package com.example.fevertracker;
 
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,10 +27,11 @@ public class AnnouncementFragmentAdmin extends Fragment {
 
     TextView announcement, cancel;
     EditText announcementE;
-    Button edit;
+    FloatingActionButton edit;
     ScrollView scrollView, scrollViewE;
+    SpannableStringBuilder spannableStringBuilder;
     boolean editMode = false;
-
+    StyleCallback styleCallback = new StyleCallback();
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -38,8 +42,12 @@ public class AnnouncementFragmentAdmin extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         edit = getView().findViewById(R.id.edit);
+
         announcement = getView().findViewById(R.id.announceText);
         announcementE = getView().findViewById(R.id.announceTextE);
+        styleCallback.setBodyView(announcementE);
+        announcementE.setCustomSelectionActionModeCallback(styleCallback);
+
         scrollView = getView().findViewById(R.id.showMode);
         scrollViewE = getView().findViewById(R.id.editMode);
         cancel = getView().findViewById(R.id.textView);
@@ -62,8 +70,8 @@ public class AnnouncementFragmentAdmin extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("announcement").getValue() != null) {
-                    announcement.setText(dataSnapshot.child("announcement").getValue().toString());
-                    announcementE.setText(dataSnapshot.child("announcement").getValue().toString());
+                    announcement.setText(Html.fromHtml(dataSnapshot.child("announcement").getValue().toString()));
+                    announcementE.setText(Html.fromHtml(dataSnapshot.child("announcement").getValue().toString()));
                 }
             }
 
@@ -77,7 +85,7 @@ public class AnnouncementFragmentAdmin extends Fragment {
         editMode = false;
         scrollView.setVisibility(View.VISIBLE);
         scrollViewE.setVisibility(View.GONE);
-        edit.setText("edit");
+//        edit.setText("edit");
     }
 
     public void Edit(View view) {
@@ -85,15 +93,15 @@ public class AnnouncementFragmentAdmin extends Fragment {
             editMode = true;
             scrollView.setVisibility(View.GONE);
             scrollViewE.setVisibility(View.VISIBLE);
-            edit.setText("save");
+//            edit.setText("save");
         } else {
             DatabaseReference reff2 = FirebaseDatabase.getInstance().getReference().child("adminInfo");
-            reff2.child("announcement").setValue(announcementE.getText().toString());
+            reff2.child("announcement").setValue(Html.toHtml(announcementE.getText()));
 
             editMode = false;
             scrollView.setVisibility(View.VISIBLE);
             scrollViewE.setVisibility(View.GONE);
-            edit.setText("edit");
+//            edit.setText("edit");
         }
     }
 }

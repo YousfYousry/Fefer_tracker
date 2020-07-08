@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -38,7 +37,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -56,7 +54,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,16 +66,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
-
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 import static java.lang.Math.asin;
@@ -89,7 +83,6 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
-
 
 public class LocationActivity extends AppCompatActivity implements LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, ZBarScannerView.ResultHandler {
@@ -253,7 +246,6 @@ public class LocationActivity extends AppCompatActivity implements LocationListe
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -264,14 +256,12 @@ public class LocationActivity extends AppCompatActivity implements LocationListe
             super.onBackPressed();
         }
     }
-
     public void saveData(String data, String name) {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(name, data);
         editor.apply();
     }
-
     public String loadData(String name) {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         if (sharedPreferences == null) {
@@ -279,9 +269,9 @@ public class LocationActivity extends AppCompatActivity implements LocationListe
         }
         return sharedPreferences.getString(name, "");
     }
-
     public void onMapReady(GoogleMap googleMap2) {
         googleMap = googleMap2;
+        googleMap.setMyLocationEnabled(true);
         init = true;
         currentLocationMarker = null;
         CameraMoved = false;
